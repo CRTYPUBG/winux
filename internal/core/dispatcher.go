@@ -75,16 +75,23 @@ Usage: winux <command> [arguments]
 
 Available commands:
   cat      Concatenate and print files
+  echo     Display a line of text
   grep     Search for patterns in files
   ls       List directory contents
+  mkdir    Create directories
+  pwd      Print working directory
+  rm       Remove files or directories
+  touch    Create files or update timestamps
 
 Options:
   --help, -h       Show this help message
   --version, -v    Show version information
 
 Examples:
-  winux ls
+  winux ls -la
   winux cat file.txt
-  winux grep error log.txt
+  winux grep -i error log.txt
+  winux mkdir -p path/to/dir
+  winux rm -rf temp/
   type log.txt | winux grep error`)
 }

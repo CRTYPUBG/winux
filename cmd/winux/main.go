@@ -32,9 +32,16 @@ func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	// Register all commands
+	// v0.1.0
 	core.Register("ls", commands.Ls)
 	core.Register("cat", commands.Cat)
 	core.Register("grep", commands.Grep)
+	// v0.2.0
+	core.Register("rm", commands.Rm)
+	core.Register("mkdir", commands.Mkdir)
+	core.Register("touch", commands.Touch)
+	core.Register("pwd", commands.Pwd)
+	core.Register("echo", commands.Echo)
 }
 
 func main() {
