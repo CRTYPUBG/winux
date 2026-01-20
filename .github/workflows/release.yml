@@ -86,7 +86,7 @@ jobs:
         shell: pwsh
         run: |
           $Version = "${{ steps.version.outputs.version }}".Replace("v", "")
-          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DMyAppVersion="$Version" winux.iss
+          iscc /DMyAppVersion="$Version" winux.iss
 
       - name: Create Archives
         shell: pwsh
