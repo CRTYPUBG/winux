@@ -16,7 +16,7 @@
 ; ----------------------------------------------------------------------------
 #define MyAppName "WINUX"
 #ifndef MyAppVersion
-  #define MyAppVersion "0.3.8"
+  #define MyAppVersion "0.3.9"
 #endif
 
 #define MyAppPublisher "CRTYPUBG"
@@ -36,17 +36,17 @@
 [Setup]
 ; Application identity
 AppId={{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}
-AppName={#MyAppName}
-AppVersion={#MyAppVersion}
-AppVerName={#MyAppName} {#MyAppVersion}
-AppPublisher={#MyAppPublisher}
+AppName="{#MyAppName}"
+AppVersion="{#MyAppVersion}"
+AppVerName="{#MyAppName} {#MyAppVersion}"
+AppPublisher="{#MyAppPublisher}"
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}/releases
 
 ; Installation paths
 DefaultDirName={autopf}\{#MyAppName}
-DefaultGroupName={#MyAppName}
+DefaultGroupName="{#MyAppName}"
 AllowNoIcons=yes
 
 ; License
@@ -54,21 +54,21 @@ LicenseFile=LICENSE
 
 ; Output
 OutputDir=installer
-OutputBaseFilename=winux-{#MyAppVersion}-setup
+OutputBaseFilename="winux-{#MyAppVersion}-setup"
 
 ; Icons
 SetupIconFile=assets\winux.ico
 UninstallDisplayIcon={app}\winux.ico
-UninstallDisplayName={#MyAppName}
+UninstallDisplayName="{#MyAppName}"
 
 ; Compression (maximum)
 Compression=lzma2/ultra64
 SolidCompression=yes
 
-; Modern Dark Style (Windows 11 style)
+; Modern Wizard Style (Inno Setup 6+)
 WizardStyle=modern
 WizardResizable=no
-WizardSizePercent=100
+; WizardSizePercent=100
 WizardImageFile=none
 WizardSmallImageFile=none
 
