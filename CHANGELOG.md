@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.0] - 2026-01-20
+
+### Added
+- **Startup Update Checker:** `update.exe --startup` for delayed background checking
+- **Windows Popup Notification:** Native dialog with Yes/No/Cancel buttons
+- **Changelog Parser:** Shows first 5 lines of release notes
+- **"More Info" Button:** Opens GitHub release page in browser
+- **Dynamic Version:** All binaries use build-time ldflags for version
+
+### Changed
+- `CurrentVersion` is now set via ldflags instead of hardcoded
+- Update now auto-detects Program Files installation path
+- Better error messages for admin permission requirements
+
+### Fixed
+- Update not applying to Program Files installation
+- Version mismatch between binaries
+
+---
+
+## [0.2.0] - 2026-01-20
+
+### Added
+- `rm` — Remove files and directories
+- `mkdir` — Create directories with `-p` flag
+- `touch` — Create files or update timestamps
+- `pwd` — Print working directory
+- `echo` — Display text with escape sequences
+
+---
+
 ## [0.1.0] - 2026-01-20
 
 ### Added
@@ -38,14 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Planned for v0.2.0
-- `rm` — Remove files
-- `mkdir` — Create directories
-- `touch` — Create/update file timestamps
-- `pwd` — Print working directory
-- `echo` — Print text
-
-### Planned for v0.3.0
+### Planned for v0.4.0
 - Recursive operations (`-r` flag)
 - More POSIX flags
 - `--help` for all commands
@@ -57,5 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+[0.3.0]: https://github.com/CRTYPUBG/winux/releases/tag/v0.3.0
+[0.2.0]: https://github.com/CRTYPUBG/winux/releases/tag/v0.2.0
 [0.1.0]: https://github.com/CRTYPUBG/winux/releases/tag/v0.1.0
-[Unreleased]: https://github.com/CRTYPUBG/winux/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/CRTYPUBG/winux/compare/v0.3.0...HEAD

@@ -1,7 +1,7 @@
 // WINUX Update - Self-update utility for WINUX
 // Downloads and applies updates from GitHub Releases
 //
-// Usage: update.exe [--check | --apply | --force]
+// Usage: update.exe [--check | --apply | --force | --startup]
 package main
 
 import (
@@ -17,14 +17,19 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/CRTYPUBG/winux/internal/updater"
 )
+
+// Version - set at build time via ldflags
+var CurrentVersion = "dev"
 
 const (
 	// GitHub API endpoint
-	GitHubAPI      = "https://api.github.com/repos/CRTYPUBG/winux/releases/latest"
-	CurrentVersion = "0.1.0"
-	BinaryName     = "winux.exe"
-	UpdaterName    = "update.exe"
+	GitHubAPI    = "https://api.github.com/repos/CRTYPUBG/winux/releases/latest"
+	BinaryName   = "winux.exe"
+	UpdaterName  = "update.exe"
+	StartupDelay = 5 * time.Second // Delay before checking on startup
 )
 
 // GitHubRelease represents the GitHub API response
@@ -57,6 +62,8 @@ func main() {
 		applyUpdate(false)
 	case "--force", "-f":
 		applyUpdate(true)
+	case "--startup", "-s":
+		startupCheck()
 	case "--help", "-h":
 		printUsage()
 	case "--version", "-v":
@@ -77,12 +84,40 @@ Options:
   --check, -c     Check for available updates
   --apply, -a     Download and apply update if available
   --force, -f     Force reinstall even if up-to-date
+  --startup, -s   Delayed startup check with GUI notification
   --version, -v   Show version
   --help, -h      Show this help
 
 Examples:
   update.exe --check
-  update.exe --apply`)
+  update.exe --apply
+  update.exe --startup`)
+}
+
+// startupCheck performs a delayed update check with GUI notification
+// This is intended to be called at system startup or app launch
+func startupCheck() {
+	// Wait before checking (let system settle)
+	time.Sleep(StartupDelay)
+
+	// Check for updates
+	info := updater.CheckForUpdates()
+	if !info.Available {
+		// No update available, exit silently
+		return
+	}
+
+	// Show Windows notification dialog
+	result := updater.ShowUpdateNotification(info)
+
+	switch result {
+	case 1: // Update Now
+		applyUpdate(false)
+	case 2: // More Info - already opened browser in dialog
+		// Do nothing, browser is open
+	default: // Later
+		// Exit silently
+	}
 }
 
 func checkForUpdates() {
@@ -100,7 +135,23 @@ func checkForUpdates() {
 		fmt.Printf("\n✅ Update available!\n")
 		fmt.Printf("   Current: v%s\n", CurrentVersion)
 		fmt.Printf("   Latest:  %s\n", release.TagName)
-		fmt.Printf("\nRun 'update.exe --apply' to update.\n")
+		
+		// Show changelog summary (first 5 lines)
+		summary := updater.CheckForUpdates().Summary
+		if len(summary) > 0 {
+			fmt.Println("\n━━━━━━━━━━━━━━━━━━━━━━━━━━")
+			fmt.Println("📋 Neler Yeni:")
+			for i, line := range summary {
+				if i >= 5 {
+					break
+				}
+				fmt.Printf("   %s\n", line)
+			}
+			fmt.Println("━━━━━━━━━━━━━━━━━━━━━━━━━━")
+		}
+		
+		fmt.Printf("\n🔗 Daha fazla: https://github.com/CRTYPUBG/winux/releases/tag/%s\n", release.TagName)
+		fmt.Printf("\n▶️  Run 'update.exe --apply' to update.\n")
 	} else {
 		fmt.Printf("\n✓ WINUX is up-to-date (v%s)\n", CurrentVersion)
 	}
@@ -185,13 +236,36 @@ func applyUpdate(force bool) {
 		os.Exit(1)
 	}
 	currentDir := filepath.Dir(currentExe)
+	
+	// Determine installation target path
+	// Priority: 1) Program Files installation, 2) Current directory
 	targetPath := filepath.Join(currentDir, BinaryName)
+	
+	// Check if winux is installed in Program Files
+	programFilesPath := filepath.Join(os.Getenv("ProgramFiles"), "WINUX", BinaryName)
+	if _, err := os.Stat(programFilesPath); err == nil {
+		targetPath = programFilesPath
+		fmt.Printf("📍 Installation path: %s\n\n", filepath.Dir(targetPath))
+	} else {
+		// Also check Program Files (x86)
+		programFilesX86Path := filepath.Join(os.Getenv("ProgramFiles(x86)"), "WINUX", BinaryName)
+		if _, err := os.Stat(programFilesX86Path); err == nil {
+			targetPath = programFilesX86Path
+			fmt.Printf("📍 Installation path: %s\n\n", filepath.Dir(targetPath))
+		}
+	}
 
 	// Backup old binary
 	fmt.Println("[3/4] Backing up current version...")
 	backupPath := targetPath + ".backup"
 	if _, err := os.Stat(targetPath); err == nil {
 		if err := os.Rename(targetPath, backupPath); err != nil {
+			// Check if it's a permission error
+			if os.IsPermission(err) {
+				fmt.Fprintf(os.Stderr, "\n⚠️  Admin yetkisi gerekli!\n")
+				fmt.Fprintf(os.Stderr, "    Lütfen PowerShell'i 'Yönetici olarak çalıştır' ile açın.\n")
+				fmt.Fprintf(os.Stderr, "    Veya: update.exe dosyasına sağ tıklayıp 'Yönetici olarak çalıştır' seçin.\n\n")
+			}
 			fmt.Fprintf(os.Stderr, "Error backing up: %v\n", err)
 			os.Exit(1)
 		}

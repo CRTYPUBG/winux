@@ -45,21 +45,22 @@ function Sign-File {
 # Step 1: Build winux.exe
 Write-Host "[1/6] Building winux.exe..." -ForegroundColor Cyan
 $BuildTime = Get-Date -Format "yyyy-MM-ddTHH:mm:ssZ"
-& $GoPath build -trimpath -ldflags="-s -w -X main.Version=v$Version -X main.BuildTime=$BuildTime" -o winux.exe ./cmd/winux
+& $GoPath build -trimpath -ldflags="-s -w -X main.Version=$Version -X main.BuildTime=$BuildTime -X github.com/CRTYPUBG/winux/internal/core.Version=$Version" -o winux.exe ./cmd/winux
 if ($LASTEXITCODE -ne 0) {
     Write-Host "ERROR: Build failed!" -ForegroundColor Red
     exit 1
 }
-Write-Host "  ✓ winux.exe built" -ForegroundColor Green
+Write-Host "  ✓ winux.exe built (v$Version)" -ForegroundColor Green
 
 # Step 2: Build update.exe
 Write-Host "[2/6] Building update.exe..." -ForegroundColor Cyan
-& $GoPath build -trimpath -ldflags="-s -w" -o update.exe ./cmd/update
+$VersionLdflags = "-s -w -X main.CurrentVersion=$Version -X github.com/CRTYPUBG/winux/internal/updater.CurrentVersion=$Version"
+& $GoPath build -trimpath -ldflags="$VersionLdflags" -o update.exe ./cmd/update
 if ($LASTEXITCODE -ne 0) {
     Write-Host "ERROR: Build failed!" -ForegroundColor Red
     exit 1
 }
-Write-Host "  ✓ update.exe built" -ForegroundColor Green
+Write-Host "  ✓ update.exe built (v$Version)" -ForegroundColor Green
 
 # Step 3: Sign winux.exe
 Write-Host "[3/6] Signing winux.exe..." -ForegroundColor Cyan

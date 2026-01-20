@@ -10,6 +10,9 @@ import (
 	"github.com/CRTYPUBG/winux/internal/utils"
 )
 
+// Version is set at build time via ldflags
+var Version = "dev"
+
 // CommandFunc is the signature for all command implementations.
 // Returns an exit code.
 type CommandFunc func(args []string) int
@@ -55,7 +58,7 @@ func Dispatch() int {
 
 	// Handle version
 	if cmdName == "--version" || cmdName == "-v" || cmdName == "version" {
-		fmt.Println("winux v0.1.0")
+		fmt.Printf("winux v%s\n", Version)
 		return utils.ExitSuccess
 	}
 
