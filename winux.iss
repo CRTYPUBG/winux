@@ -15,6 +15,10 @@
 ; Version Configuration (UPDATE THIS FOR NEW RELEASES)
 ; ----------------------------------------------------------------------------
 #define MyAppName "WINUX"
+#ifndef MyAppVersion
+  #define MyAppVersion "0.3.8"
+#endif
+
 #define MyAppPublisher "CRTYPUBG"
 #define MyAppURL "https://github.com/CRTYPUBG/winux"
 #define MyAppExeName "winux.exe"
