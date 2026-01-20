@@ -16,7 +16,7 @@
 ; ----------------------------------------------------------------------------
 #define MyAppName "WINUX"
 #ifndef MyAppVersion
-  #define MyAppVersion "0.3.10"
+  #define MyAppVersion "0.3.11"
 #endif
 
 #define MyAppPublisher "CRTYPUBG"
@@ -71,8 +71,6 @@ SolidCompression=yes
 WizardStyle=modern
 WizardResizable=no
 ; WizardSizePercent=100
-WizardImageFile=none
-WizardSmallImageFile=none
 
 ; Permissions
 PrivilegesRequired=admin
