@@ -21,15 +21,14 @@
 #define MyAppExeName "winux.exe"
 
 ; ----------------------------------------------------------------------------
-; Signing Configuration
+; Signing Configuration (Local only - comment out for GitHub Actions)
 ; ----------------------------------------------------------------------------
-#define SignToolPath "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe"
-#define CertFile "C:\Users\LenovoPC\cert.pfx"
-#define CertPass "ueo586_crty555"
-#define TimestampURL "http://timestamp.digicert.com"
+; #define SignToolPath "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe"
+; #define CertFile "C:\Users\LenovoPC\cert.pfx"
+; #define CertPass "ueo586_crty555"
+; #define TimestampURL "http://timestamp.digicert.com"
+; #define SignCommand '"' + SignToolPath + '" sign /f "' + CertFile + '" /p "' + CertPass + '" /fd SHA256 /tr ' + TimestampURL + ' /td SHA256 /v $f'
 
-; Sign command for SignTool directive
-#define SignCommand '"' + SignToolPath + '" sign /f "' + CertFile + '" /p "' + CertPass + '" /fd SHA256 /tr ' + TimestampURL + ' /td SHA256 /v $f'
 
 [Setup]
 ; Application identity
