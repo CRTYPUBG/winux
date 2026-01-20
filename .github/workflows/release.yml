@@ -64,19 +64,21 @@ jobs:
 
       - name: Build WINUX (Windows amd64)
         run: |
+          VERSION_NUM=$(echo "${{ steps.version.outputs.version }}" | sed 's/^v//')
           CGO_ENABLED=0 GOOS=windows GOARCH=amd64 \
           go build \
             -trimpath \
-            -ldflags="-s -w -X main.Version=${{ steps.version.outputs.version }} -X main.BuildTime=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            -ldflags="-s -w -X main.Version=${VERSION_NUM} -X main.BuildTime=$(date -u +%Y-%m-%dT%H:%M:%SZ) -X github.com/CRTYPUBG/winux/internal/core.Version=${VERSION_NUM}" \
             -o ${{ env.BINARY_NAME }}.exe \
             ./cmd/winux
 
       - name: Build Update utility
         run: |
+          VERSION_NUM=$(echo "${{ steps.version.outputs.version }}" | sed 's/^v//')
           CGO_ENABLED=0 GOOS=windows GOARCH=amd64 \
           go build \
             -trimpath \
-            -ldflags="-s -w" \
+            -ldflags="-s -w -X main.CurrentVersion=${VERSION_NUM} -X github.com/CRTYPUBG/winux/internal/updater.CurrentVersion=${VERSION_NUM}" \
             -o update.exe \
             ./cmd/update
 
