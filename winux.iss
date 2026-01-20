@@ -15,7 +15,6 @@
 ; Version Configuration (UPDATE THIS FOR NEW RELEASES)
 ; ----------------------------------------------------------------------------
 #define MyAppName "WINUX"
-#define MyAppVersion "0.3.6"
 #define MyAppPublisher "CRTYPUBG"
 #define MyAppURL "https://github.com/CRTYPUBG/winux"
 #define MyAppExeName "winux.exe"
@@ -89,7 +88,7 @@ RestartApplications=no
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
-Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
+; Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
 
 [Tasks]
 Name: "addtopath"; Description: "Add WINUX to system PATH (recommended)"; GroupDescription: "System Integration:"; Flags: checkedonce
