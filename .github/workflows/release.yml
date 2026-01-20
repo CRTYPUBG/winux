@@ -27,11 +27,11 @@ env:
 
 jobs:
   # ==========================================================================
-  # JOB 1: Build WINUX Binary
+  # JOB 1: Build WINUX Binary & Installer
   # ==========================================================================
   build:
     name: Build WINUX
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     
     outputs:
       version: ${{ steps.version.outputs.version }}
@@ -45,6 +45,7 @@ jobs:
 
       - name: Extract version from tag
         id: version
+        shell: bash
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
@@ -56,55 +57,80 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
           cache: true
 
-      - name: Verify Go installation
-        run: go version
-
       - name: Download dependencies
         run: go mod download
 
-      - name: Build WINUX (Windows amd64)
+      - name: Build WINUX Binary
+        shell: bash
         run: |
           VERSION_NUM=$(echo "${{ steps.version.outputs.version }}" | sed 's/^v//')
-          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 \
+          GOOS=windows GOARCH=amd64 \
           go build \
             -trimpath \
-            -ldflags="-s -w -X main.Version=${VERSION_NUM} -X main.BuildTime=$(date -u +%Y-%m-%dT%H:%M:%SZ) -X github.com/CRTYPUBG/winux/internal/core.Version=${VERSION_NUM}" \
+            -ldflags="-s -w -X main.Version=${VERSION_NUM} -X github.com/CRTYPUBG/winux/internal/core.Version=${VERSION_NUM}" \
             -o ${{ env.BINARY_NAME }}.exe \
             ./cmd/winux
 
       - name: Build Update utility
+        shell: bash
         run: |
           VERSION_NUM=$(echo "${{ steps.version.outputs.version }}" | sed 's/^v//')
-          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 \
+          GOOS=windows GOARCH=amd64 \
           go build \
             -trimpath \
             -ldflags="-s -w -X main.CurrentVersion=${VERSION_NUM} -X github.com/CRTYPUBG/winux/internal/updater.CurrentVersion=${VERSION_NUM}" \
             -o update.exe \
             ./cmd/update
 
-      - name: Generate SHA256 checksums
-        id: hash
+      - name: Build Installer (Inno Setup)
+        shell: pwsh
         run: |
-          sha256sum ${{ env.BINARY_NAME }}.exe > ${{ env.BINARY_NAME }}.exe.sha256
-          sha256sum update.exe > update.exe.sha256
-          SHA256=$(sha256sum ${{ env.BINARY_NAME }}.exe | awk '{print $1}')
-          echo "sha256=$SHA256" >> $GITHUB_OUTPUT
-          echo "SHA256: $SHA256"
+          $Version = "${{ steps.version.outputs.version }}".Replace("v", "")
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" /DMyAppVersion="$Version" winux.iss
 
-      - name: Verify binaries exist
+      - name: Create Archives
+        shell: pwsh
         run: |
-          ls -la *.exe
-          file *.exe
+          $Version = "${{ steps.version.outputs.version }}"
+          $FolderName = "winux-$Version"
+          New-Item -ItemType Directory -Path $FolderName
+          Copy-Item "${{ env.BINARY_NAME }}.exe" -Destination "$FolderName/"
+          Copy-Item "update.exe" -Destination "$FolderName/"
+          "WINUX $Version - https://github.com/CRTYPUBG/winux" | Out-File -FilePath "$FolderName/README.txt"
+          
+          # Create ZIP
+          Compress-Archive -Path "$FolderName/*" -DestinationPath "winux-$Version-windows-amd64.zip"
+          
+          # Create 7Z (Substitute for RAR as 7z can't create RAR but is better)
+          7z a "winux-$Version-windows-amd64.7z" "$FolderName/*"
+
+      - name: Generate Checksums
+        id: hash
+        shell: pwsh
+        run: |
+          $Version = "${{ steps.version.outputs.version }}"
+          Get-FileHash "${{ env.BINARY_NAME }}.exe" -Algorithm SHA256 | ForEach-Object { $_.Hash.ToLower() + "  " + $_.Path.Split('\')[-1] } | Out-File -FilePath "${{ env.BINARY_NAME }}.exe.sha256" -Encoding ascii
+          Get-FileHash "update.exe" -Algorithm SHA256 | ForEach-Object { $_.Hash.ToLower() + "  " + $_.Path.Split('\')[-1] } | Out-File -FilePath "update.exe.sha256" -Encoding ascii
+          $MainHash = (Get-FileHash "${{ env.BINARY_NAME }}.exe" -Algorithm SHA256).Hash.ToLower()
+          echo "sha256=$MainHash" >> $env:GITHUB_OUTPUT
+
+      - name: Prepare Artifacts
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path dist
+          Move-Item "${{ env.BINARY_NAME }}.exe" dist/
+          Move-Item "${{ env.BINARY_NAME }}.exe.sha256" dist/
+          Move-Item "update.exe" dist/
+          Move-Item "update.exe.sha256" dist/
+          Move-Item "installer/*.exe" dist/
+          Move-Item "*.zip" dist/
+          Move-Item "*.7z" dist/
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: winux-binaries-${{ steps.version.outputs.version }}
-          path: |
-            ${{ env.BINARY_NAME }}.exe
-            ${{ env.BINARY_NAME }}.exe.sha256
-            update.exe
-            update.exe.sha256
+          path: dist/
           retention-days: 30
           if-no-files-found: error
 
@@ -141,9 +167,11 @@ jobs:
           
           | File | Description |
           |------|-------------|
-          | `winux.exe` | Main binary (ls, cat, grep, rm, mkdir, touch, pwd, echo) |
-          | `update.exe` | Self-update utility |
-          | `*.sha256` | SHA256 checksums |
+          | `🚀 winux-$VERSION-setup.exe` | **Recommended** - Windows Installer |
+          | `📦 winux-$VERSION-windows-amd64.zip` | Portable ZIP archive |
+          | `🗜️ winux-$VERSION-windows-amd64.7z` | High-compression 7Z archive |
+          | `winux.exe` | Main binary only |
+          | `update.exe` | Self-update utility only |
           
           ## ✅ Verification
           
@@ -152,29 +180,18 @@ jobs:
           (Get-FileHash winux.exe -Algorithm SHA256).Hash
           ```
           
-          ## 🚀 Quick Install
+          ## 🔄 Update
           
+          If you have an older version installed, just run:
           ```powershell
-          # Download
-          Invoke-WebRequest -Uri "https://github.com/CRTYPUBG/winux/releases/latest/download/winux.exe" -OutFile winux.exe
-          
-          # Add to PATH (run as admin)
-          Move-Item winux.exe "C:\Windows\System32\"
+          update --apply
+          ```
+          Or use the new background checker:
+          ```powershell
+          update --startup
           ```
           
-          ## 📋 Available Commands
-          
-          - `ls` - List directory contents
-          - `cat` - Print file contents
-          - `grep` - Search patterns in files
-          - `rm` - Remove files/directories
-          - `mkdir` - Create directories
-          - `touch` - Create files / update timestamps
-          - `pwd` - Print working directory
-          - `echo` - Display text
-          
           ---
-          
           **Full changelog:** https://github.com/CRTYPUBG/winux/blob/main/CHANGELOG.md
           EOF
           sed -i "s/\$VERSION/$VERSION/g" release-notes.md
@@ -187,10 +204,10 @@ jobs:
           draft: false
           prerelease: ${{ contains(needs.build.outputs.version, '-') }}
           files: |
-            ./release/winux.exe
-            ./release/winux.exe.sha256
-            ./release/update.exe
-            ./release/update.exe.sha256
+            ./release/*.exe
+            ./release/*.sha256
+            ./release/*.zip
+            ./release/*.7z
           fail_on_unmatched_files: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

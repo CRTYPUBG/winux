@@ -15,7 +15,7 @@
 ; Version Configuration (UPDATE THIS FOR NEW RELEASES)
 ; ----------------------------------------------------------------------------
 #define MyAppName "WINUX"
-#define MyAppVersion "0.1.0"
+#define MyAppVersion "0.3.1"
 #define MyAppPublisher "CRTYPUBG"
 #define MyAppURL "https://github.com/CRTYPUBG/winux"
 #define MyAppExeName "winux.exe"
@@ -67,6 +67,8 @@ SolidCompression=yes
 WizardStyle=modern
 WizardResizable=no
 WizardSizePercent=100
+WizardImageFile=none
+WizardSmallImageFile=none
 
 ; Permissions
 PrivilegesRequired=admin
