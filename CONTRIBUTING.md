@@ -1,11 +1,3 @@
-
----
-
-# 🤝 CONTRIBUTING.md
-
-Create **`CONTRIBUTING.md`**
-
-```md
 # Contributing to WINUX
 
 Thank you for your interest in contributing to WINUX 🎉
