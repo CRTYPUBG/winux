@@ -69,10 +69,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `whoami` — Print current user name
+- `uptime` — Display system uptime
+- `nano` — Native terminal text editor for Windows
+- **Full Command Roadmap:** Comprehensive list of planned commands added to wiki.md
+
 ### Planned for v0.4.0
 - Recursive operations (`-r` flag)
 - More POSIX flags
-- `--help` for all commands
+- `cp` and `mv` commands
 
 ### Planned for v1.0.0
 - Full coreutils suite

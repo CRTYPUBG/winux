@@ -1,150 +1,108 @@
 <p align="center">
-  <img src="assets/logo.png" alt="WINUX Logo" width="400">
+  <img src="assets/logo.png" alt="WINUX Logo" width="300">
 </p>
 
 <h1 align="center">WINUX</h1>
 
 <p align="center">
-  <strong>Native Linux-like coreutils for Windows</strong><br>
-  Single binary · No WSL · No aliases
+  <strong>Native Linux-like command line utilities for Windows.</strong><br>
+  High performance · Zero dependencies · Enterprise ready
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/platform-Windows%2010%2F11-blue?style=flat-square" alt="Platform">
-  <img src="https://img.shields.io/badge/language-Go-00ADD8?style=flat-square&logo=go" alt="Go">
-  <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="License">
-  <img src="https://img.shields.io/github/v/release/CRTYPUBG/winux?style=flat-square" alt="Release">
+  <a href="https://github.com/CRTYPUBG/winux/releases/latest">
+    <img src="https://img.shields.io/github/v/release/CRTYPUBG/winux?style=for-the-badge&color=007ACC" alt="Latest Release">
+  </a>
+  <a href="https://github.com/CRTYPUBG/winux/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License">
+  </a>
+  <img src="https://img.shields.io/badge/Platform-Windows%2010%2F11-0078D4?style=for-the-badge&logo=windows" alt="Platform">
 </p>
+
+---
+
+## ⚡ Quick Installation
+
+WINUX can be installed via several methods. Choose the one that fits your workflow.
+
+### 1. Official WinGet (Coming Soon)
+Once the manifest is merged, you can install with a single command:
+```powershell
+winget install CRTYPUBG.WINUX
+```
+
+### 2. Windows Installer (.exe)
+Download the **v0.3.11-setup.exe** for a guided installation experience:
+👉 **[Download Installer](https://github.com/CRTYPUBG/winux/releases/download/v0.3.11/winux-0.3.11-setup.exe)**
+
+### 3. Portable Archives
+Download and extract to your custom folder:
+- [📦 ZIP Archive](https://github.com/CRTYPUBG/winux/releases/download/v0.3.11/winux-v0.3.11-windows-amd64.zip)
+- [🗜️ 7-Zip Archive](https://github.com/CRTYPUBG/winux/releases/download/v0.3.11/winux-v0.3.11-windows-amd64.7z)
 
 ---
 
 ## ✨ Features
 
-- ✅ **Single static binary** — one executable, no dependencies
-- ✅ **Written in Go** — fast compilation, cross-platform potential
-- ✅ **Native Windows executable** — no emulation layer
-- ✅ **No WSL required** — works on any Windows 10/11
-- ✅ **No aliases or shell wrappers** — real executables
-- ✅ **Real STDIN / STDOUT / STDERR** — proper stream handling
-- ✅ **Pipe and redirection support** — `type file.txt | winux grep error`
-- ✅ **Linux-compatible exit codes** — scripts work as expected
-- ✅ **BusyBox-style dispatch** — `argv[0]` command resolution
+- 🚀 **Native performance** — no WSL, no emulation, no runtime overhead.
+- 📦 **BusyBox-style** — a single binary that contains all commands.
+- 🔄 **Auto-update system** — stay up to date with `update --check`.
+- 🛡️ **Integrity verified** — all files are SHA256 hashed and verifiable.
+- 🔗 **Pipe & Redirection** — full support for standard streams.
 
 ---
 
-## 🚀 Quick Start
+## 🛠️ Available Commands
 
-### Download
+| Command | Status | Description |
+|:---:|:---:|---|
+| `ls` | ✅ | List directory contents |
+| `cat` | ✅ | Concatenate and print files |
+| `grep` | ✅ | Search for patterns in files |
+| `rm` | ✅ | Remove files or directories |
+| `mkdir` | ✅ | Create directories |
+| `touch` | ✅ | Create empty files or update timestamps |
+| `pwd` | ✅ | Print working directory |
+| `echo` | ✅ | Display text/variables |
+| `whoami`| ✅ | Print effective username |
+| `uptime`| ✅ | Display system uptime |
+| `update`| ✅ | Self-updater utility |
 
-Download the latest release from [Releases](https://github.com/CRTYPUBG/winux/releases).
+---
 
-### Usage
+## 🔄 Self-Update Utility
+
+WINUX comes with a built-in update manager.
 
 ```powershell
-# Basic commands
-winux ls
-winux ls -la
-winux cat file.txt
-winux grep error log.txt
+# Check for latest version
+update --check
 
-# Pipe support
-type log.txt | winux grep -i error
-winux cat file.txt | winux grep pattern
-```
+# Apply latest update automatically
+update --apply
 
-### BusyBox-style (symlink)
-
-```powershell
-# Rename or symlink winux.exe to command name
-copy winux.exe ls.exe
-.\ls.exe -la
+# Check version in background on startup
+update --startup
 ```
 
 ---
 
-## 📦 Available Commands
+## 🗺️ Project Status
 
-| Command | Description | Flags |
-|---------|-------------|-------|
-| `ls` | List directory contents | `-a`, `-l`, `-h` |
-| `cat` | Concatenate and print files | `-n`, `-b` |
-| `grep` | Search for patterns | `-i`, `-v`, `-n`, `-c`, `-l`, `-E` |
-
-*More commands coming in future releases.*
-
----
-
-## 🏗️ Build from Source
-
-### Requirements
-
-- Go 1.21+
-
-### Build
-
-```powershell
-go build -ldflags="-s -w" -o winux.exe ./cmd/winux
-```
-
----
-
-## 📁 Project Structure
-
-```
-winux/
-├── cmd/winux/main.go          # Entry point & dispatcher
-├── internal/
-│   ├── commands/              # Command implementations
-│   │   ├── cat.go
-│   │   ├── grep.go
-│   │   └── ls.go
-│   ├── core/dispatcher.go     # BusyBox-style command dispatch
-│   ├── io/stdin.go            # Pipe detection
-│   └── utils/exitcodes.go     # Linux exit codes
-├── assets/                    # Branding assets
-└── go.mod
-```
-
----
-
-## 🔌 Exit Codes
-
-| Condition | Exit Code |
-|-----------|-----------|
-| Success | `0` |
-| No matches / failure | `1` |
-| Invalid usage / error | `2` |
-| Command not found | `127` |
-
----
-
-## 🗺️ Roadmap
-
-- [x] v0.1 — Core commands (`ls`, `cat`, `grep`)
-- [ ] v0.2 — More commands (`rm`, `mkdir`, `touch`, `pwd`, `echo`)
-- [ ] v0.3 — POSIX-style flags, recursive operations
-- [ ] v1.0 — Full coreutils suite, installer, PATH integration
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch
-3. Follow Go best practices
-4. Keep behavior Linux-compatible
-5. Submit a pull request
+- [x] **v0.1** — Core logic & Dispatcher.
+- [x] **v0.2** — Added basic file commands.
+- [x] **v0.3** — Added Update system & Installer.
+- [ ] **v0.4** — Recursive operations (`rm -rf`, `ls -R`).
+- [ ] **v1.0** — Official WinGet release & Complete suite.
 
 ---
 
 ## 📜 License
 
-MIT License © 2026 CRTYPUBG
+Distributed under the **MIT License**. See `LICENSE` for more information.
 
 ---
 
 <p align="center">
-  <em>"Linux tools should feel native on Windows, not emulated."</em>
+  <em>"Reclaiming the Windows CLI, one command at a time."</em>
 </p>

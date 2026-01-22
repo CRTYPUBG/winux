@@ -82,9 +82,12 @@ Available commands:
   grep     Search for patterns in files
   ls       List directory contents
   mkdir    Create directories
+  nano     Edit text files
   pwd      Print working directory
   rm       Remove files or directories
   touch    Create files or update timestamps
+  uptime   Display system uptime
+  whoami   Print effective username
 
 Options:
   --help, -h       Show this help message

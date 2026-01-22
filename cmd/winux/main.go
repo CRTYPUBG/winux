@@ -42,6 +42,10 @@ func init() {
 	core.Register("touch", commands.Touch)
 	core.Register("pwd", commands.Pwd)
 	core.Register("echo", commands.Echo)
+	// v0.3.0
+	core.Register("whoami", commands.Whoami)
+	core.Register("uptime", commands.Uptime)
+	core.Register("nano", commands.Nano)
 }
 
 func main() {

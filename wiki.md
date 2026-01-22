@@ -452,13 +452,85 @@ No. WINUX provides the most common file utilities. For full Linux compatibility,
 
 ### Q: Are there more commands coming?
 
-Yes! Planned commands:
-- `cp` — Copy files
-- `mv` — Move files
-- `head` / `tail` — View file parts
-- `wc` — Word count
-- `find` — Search files
-- `xargs` — Build commands
+Yes! We have an ambitious roadmap to bring the full Linux CLI experience to Windows.
+
+#### 📂 Files & Directories (Dosya & Dizin)
+- [x] `ls` — List directory contents
+- [ ] `cd` — Change directory (Note: restricted to subshells)
+- [x] `pwd` — Print working directory
+- [ ] `tree` — Tree view
+- [ ] `stat` — File information
+
+#### 📄 File Operations (Dosya İşlemleri)
+- [ ] `cp` — Copy
+- [ ] `mv` — Move/Rename
+- [x] `rm` — Delete
+- [x] `touch` — Create file
+- [x] `mkdir` — Create folder
+- [ ] `rmdir` — Delete folder
+
+#### 🔍 Viewing (Görüntüleme)
+- [x] `cat` — Concatenate and print
+- [x] `nano` — Terminal editor
+- [ ] `less` — Pager
+- [ ] `more` — Pager
+- [ ] `head` — First lines
+- [ ] `tail` — Last lines
+- [ ] `watch` — Monitor
+
+#### 🧰 System & Hardware (Sistem & Donanım)
+- [ ] `uname -a`
+- [ ] `hostnamectl`
+- [ ] `lsblk`
+- [ ] `df -h`
+- [ ] `du -sh`
+- [ ] `free -h`
+- [ ] `uptime`
+- [ ] `htop` / `top`
+- [ ] `vmstat` / `iostat`
+
+#### 👤 User & Permissions (Kullanıcı & Yetki)
+- [ ] `whoami`
+- [ ] `id`
+- [ ] `groups`
+- [ ] `passwd`
+- [ ] `su` / `sudo`
+- [ ] `login` / `logout`
+
+#### 🌐 Network (Ağ)
+- [ ] `ip a` / `ip r`
+- [ ] `ss`
+- [ ] `ping`
+- [ ] `traceroute`
+- [ ] `curl` / `wget`
+- [ ] `nc` / `nmap`
+- [ ] `ftp` / `ssh` / `scp` / `rsync`
+
+#### ⚙️ System Control (Servis & Sistem Kontrolü)
+- [ ] `systemctl` / `journalctl`
+- [ ] `service` / `chkconfig`
+
+#### 📦 Package Managers (Paket Yöneticileri)
+- [ ] `apt` / `dnf` / `pacman` (Wrappers/Emulators for Windows equivalents)
+
+#### 🧪 Text Processing (Metin İşleme)
+- [x] `grep` — Search
+- [ ] `sed` — Steam editor
+- [ ] `awk` — Pattern scanning
+- [ ] `cut` / `sort` / `uniq` / `tr` / `wc`
+- [ ] `xargs` / `column`
+
+#### 🧑‍💻 Shell & Script
+- [ ] `alias` / `export` / `source` / `env` / `history`
+- [ ] `jobs` / `bg` / `fg`
+
+#### 🗜️ Archiving (Arşiv & Sıkıştırma)
+- [ ] `tar` / `zip` / `unzip` / `gzip` / `7z`
+
+#### 🔐 Security (Güvenlik)
+- [ ] `chmod` / `chown`
+- [ ] `setfacl` / `getfacl`
+- [ ] `fail2ban-client`
 
 ### Q: Can I use symlinks for BusyBox-style?
 

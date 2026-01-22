@@ -67,10 +67,11 @@ func Cat(args []string) int {
 	lineNum := 1
 
 	for _, file := range files {
-		var reader io.Reader
+		var r io.Reader
+		var closer io.Closer
 
 		if file == "-" {
-			reader = os.Stdin
+			r = os.Stdin
 		} else {
 			f, err := os.Open(file)
 			if err != nil {
@@ -78,36 +79,46 @@ func Cat(args []string) int {
 				exitCode = utils.ExitFailure
 				continue
 			}
-			defer f.Close()
-			reader = f
+			r = f
+			closer = f
 		}
 
-		scanner := bufio.NewScanner(reader)
-		// Increase buffer size for large lines
-		buf := make([]byte, 0, 64*1024)
-		scanner.Buffer(buf, 1024*1024)
+		if !numberLines && !numberNonBlank {
+			// Fast path for raw output (supports binary files)
+			_, err := io.Copy(os.Stdout, r)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "cat: %s: %v\n", file, err)
+				exitCode = utils.ExitFailure
+			}
+		} else {
+			// Line numbering path
+			scanner := bufio.NewScanner(r)
+			buf := make([]byte, 0, 64*1024)
+			scanner.Buffer(buf, 1024*1024)
 
-		for scanner.Scan() {
-			line := scanner.Text()
-
-			if numberNonBlank {
-				if line != "" {
+			for scanner.Scan() {
+				line := scanner.Text()
+				if numberNonBlank {
+					if line != "" {
+						fmt.Printf("%6d\t%s\n", lineNum, line)
+						lineNum++
+					} else {
+						fmt.Println()
+					}
+				} else if numberLines {
 					fmt.Printf("%6d\t%s\n", lineNum, line)
 					lineNum++
-				} else {
-					fmt.Println()
 				}
-			} else if numberLines {
-				fmt.Printf("%6d\t%s\n", lineNum, line)
-				lineNum++
-			} else {
-				fmt.Println(line)
+			}
+
+			if err := scanner.Err(); err != nil {
+				fmt.Fprintf(os.Stderr, "cat: %s: %v\n", file, err)
+				exitCode = utils.ExitFailure
 			}
 		}
 
-		if err := scanner.Err(); err != nil {
-			fmt.Fprintf(os.Stderr, "cat: %s: %v\n", file, err)
-			exitCode = utils.ExitFailure
+		if closer != nil {
+			closer.Close()
 		}
 	}
 
