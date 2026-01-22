@@ -1,8 +1,7 @@
-<<<<<<< HEAD
+
 # 🤝 Contributing to WINUX
-=======
-# Contributing to WINUX
->>>>>>> b6e0d284d31ad0d808f56d743537921be1710686
+
+
 
 Thank you for your interest in contributing to WINUX 🎉
 
